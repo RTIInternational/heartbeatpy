@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "heartbeatpy"
+version = "0.1.0"
+description = "Heartbeat survey analysis in python"
+authors = ["Kirsty Weitzel <kweitzel@rti.org>"]
+readme = "README.md"
+packages = [{include = "heartbeatpy", from = "src"}]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+pandas = "^2.0.2"
+altair = "^5.0.1"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.3.1"
+ruff = "^0.0.270"
+black = "^23.3.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
