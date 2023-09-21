@@ -2,7 +2,7 @@
 name = "heartbeatpy"
 version = "0.1.0"
 description = "Heartbeat survey analysis in python"
-authors = ["Kirsty Weitzel <kweitzel@rti.org>", "Peter Baumgartner <pbaumgartner@rti.org>]
+authors = ["Kirsty Weitzel <kweitzel@rti.org> ,Peter Baumgartner <pbaumgartner@rti.org>"]
 readme = "README.md"
 license = "GPL-3.0-or-later"
 packages = [{include = "heartbeatpy", from = "src"}]
