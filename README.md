@@ -2,6 +2,10 @@
 
 Heartbeat survey analysis in python, inspired by the R packages ["heaRtbeat"](https://rdrr.io/github/jpurl/heaRtbeat/f/README.md) and ["heartbeat"](https://patrickgreen93.github.io/Heartbeat/articles/Introduction.html). For more information on heartbeat analysis, check out the [2021 Wiley Award for Excellence in Survey Research](https://www.siop.org/Research-Publications/Items-of-Interest/ArtMID/19366/ArticleID/5052/SIOP-Award-Winners-Wiley-Award-for-Excellence-in-Survey-Research)
 
+## Installation
+
+heartbeatpy is available on ["PyPI"](https://pypi.org/project/heartbeatpy/) and can be installed using ``` pip install heartbeatpy ```
+
 
 ## Example usage
 
