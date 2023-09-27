@@ -4,7 +4,7 @@ Heartbeat survey analysis in python, inspired by the R packages ["heaRtbeat"](ht
 
 ## Installation
 
-heartbeatpy is available on ["PyPI"](https://pypi.org/project/heartbeatpy/) and can be installed using ``` pip install heartbeatpy ```
+heartbeatpy is available on [PyPI](https://pypi.org/project/heartbeatpy/) and can be installed using ``` pip install heartbeatpy ```
 
 
 ## Example usage
