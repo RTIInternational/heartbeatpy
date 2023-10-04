@@ -117,7 +117,7 @@ def calculate_votes(
         votes.loc[threshold < zscore, col] = 1  # Create upvotes
         votes.loc[-1 * threshold > zscore, col] = -1  # Create downvotes
         votes.loc[
-            (threshold > zscore) & (zscore > (-1 * threshold)), col
+            (threshold >= zscore) & (zscore >= (-1 * threshold)), col
         ] = 0  # Set all other values to zero
         votes.loc[zscore.isna(), col] = 0  # Catch for zero standard deviation
 
@@ -155,6 +155,9 @@ def calculate_summary(votes: pd.DataFrame, columns: List[str]) -> pd.DataFrame:
             - Neutral: The percentage of neutral votes for the question.
             - Controversy_Score: The calculated controversy score for the question.
     """  # noqa: E501
+
+    # Add check that summary values are in [-1, 0, 1]
+
     summary = (
         votes.melt(value_vars=columns, var_name="Question", value_name="vote")
         .groupby(["Question"])
