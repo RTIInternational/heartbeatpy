@@ -6,6 +6,7 @@ from heartbeatpy import (
 )
 import pandas as pd
 import pytest
+import numpy as np
 
 
 @pytest.fixture
@@ -57,6 +58,12 @@ def test_vote_calc():
 
 def test_provide_threshold(sample_data):
     calculate_votes(data=sample_data[0], columns=sample_data[1], threshold=0.5)
+
+
+def test_na_values(sample_data):
+    nan_data = sample_data[0].assign(Q6=np.NaN)
+    with pytest.raises(ValueError):
+        calculate_votes(data=nan_data, columns=[f"Q{i}" for i in range(1, 7)])
 
 
 def test_zero_stdev():

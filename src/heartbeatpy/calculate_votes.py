@@ -87,6 +87,12 @@ def calculate_votes(
             " above the mean to define an upvote."
         )
 
+    if data[columns].isna().any().any():
+        raise ValueError(
+            "NA values present in data. "
+            "Please remove or impute NA values before using calculate_votes()."
+        )
+
     if not isinstance(columns, list):
         # in case a pandas Index gets passed
         columns = list(columns)
@@ -101,8 +107,8 @@ def calculate_votes(
     votes = data.copy()
     stats = pd.DataFrame()
     # Create mean and standard deviation columns
-    stats["individual_sd"] = likert_cols.std(axis=1, skipna=True)
-    stats["individual_mean"] = likert_cols.mean(axis=1, skipna=True)
+    stats["individual_sd"] = likert_cols.std(axis=1)
+    stats["individual_mean"] = likert_cols.mean(axis=1)
 
     # Replace values in likert column based on the threshold condition
     for col in columns:
