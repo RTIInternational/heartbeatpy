@@ -145,7 +145,7 @@ def calculate_summary(votes: pd.DataFrame, columns: List[str]) -> pd.DataFrame:
 
     Args:
         votes (DataFrame): The dataset containing the votes, created by calculate_votes().
-        columns (list): A list of likert question column names in the dataset.
+        columns (list): A list of likert question column names in the votes dataset.
 
     Returns:
         DataFrame: A summary DataFrame with the following columns:
@@ -156,7 +156,11 @@ def calculate_summary(votes: pd.DataFrame, columns: List[str]) -> pd.DataFrame:
             - Controversy_Score: The calculated controversy score for the question.
     """  # noqa: E501
 
-    # Add check that summary values are in [-1, 0, 1]
+    # Check dataframe only consists of upvotes/downvotes/zeros:
+    vote_values = [-1, 0, 1]
+
+    if not all([all(votes[col].isin(vote_values)) for col in columns]):
+        raise ValueError(f"Vote dataframe contains values other than {vote_values}")
 
     summary = (
         votes.melt(value_vars=columns, var_name="Question", value_name="vote")
