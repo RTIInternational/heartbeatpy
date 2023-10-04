@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "heartbeatpy"
-version = "0.1.0"
+version = "0.2.0"
 description = "Heartbeat survey analysis in python"
 authors = ["Kirsty Weitzel <kweitzel@rti.org>", "Peter Baumgartner <pbaumgartner@rti.org>"]
 readme = "README.md"
