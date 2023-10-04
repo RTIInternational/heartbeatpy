@@ -112,8 +112,7 @@ def calculate_votes(
 
     # Replace values in likert column based on the threshold condition
     for col in columns:
-        with pd.option_context("use_inf_as_na", True):
-            zscore = (votes[col] - stats["individual_mean"]) / stats["individual_sd"]
+        zscore = (votes[col] - stats["individual_mean"]) / stats["individual_sd"]
 
         votes.loc[threshold < zscore, col] = 1  # Create upvotes
         votes.loc[-1 * threshold > zscore, col] = -1  # Create downvotes
