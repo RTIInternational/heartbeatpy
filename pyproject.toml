@@ -10,7 +10,7 @@ packages = [{include = "heartbeatpy", from = "src"}]
 [tool.poetry.dependencies]
 python = "^3.8"
 pandas = "^2.0.2"
-altair = "^5.0.1"
+altair = "^5.1.2"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.3.1"
