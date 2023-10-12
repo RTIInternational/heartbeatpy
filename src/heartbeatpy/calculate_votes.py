@@ -22,14 +22,14 @@ def calculate_score(row, col, cols, threshold):
 
     row_mean = row[cols].mean(skipna=True)
     row_std = row[cols].std(skipna=True)
-    if row_std == 0:
+    if np.isnan(row[col]):
+        return np.NaN
+    elif row_std == 0:
         return 0
     else:
         zscore = (row[col] - row_mean) / row_std
 
-    if np.isnan(row[col]):
-        return np.NaN
-    elif threshold < zscore:
+    if threshold < zscore:
         return 1
     elif (-1 * threshold) > zscore:
         return -1
