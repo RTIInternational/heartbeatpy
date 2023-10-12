@@ -5,6 +5,19 @@ import pandas as pd
 import altair as alt
 
 def calculate_score(row, col, cols, threshold):
+    """
+    Calculate a score based on a z-score for a specific value in a DataFrame row.
+
+    Args:
+    row (pd.Series): A pandas Series representing a row in a DataFrame.
+    col (str): The name of the column for which the z-score should be calculated.
+    cols (list of str): A list of column names used to calculate the mean and standard deviation.
+    threshold (float): The threshold value for classifying the z-score.
+
+    Returns:
+    int: A score based on the z-score and threshold. Returns 1 if z-score is above threshold,
+         -1 if z-score is below -threshold, 0 otherwise. If row_std is 0, returns 0. If row[col] is NaN, returns NaN.
+    """
 
     row_mean = row[cols].mean(skipna=True)
     row_std = row[cols].std(skipna=True)
