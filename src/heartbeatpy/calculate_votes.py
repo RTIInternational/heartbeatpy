@@ -4,6 +4,23 @@ import numpy as np
 import pandas as pd
 import altair as alt
 
+def calculate_score(row, col, cols, threshold):
+
+    row_mean = row[cols].mean(skipna=True)
+    row_std = row[cols].std(skipna=True)
+    if row_std == 0:
+        return 0
+    else:
+        zscore = (row[col] - row_mean) / row_std
+
+    if np.isnan(row[col]):
+        return np.NaN
+    elif threshold < zscore:
+        return 1
+    elif (-1 * threshold) > zscore:
+        return -1
+    else:
+        return 0
 
 def create_sample_data(ncols: int = 10, nrows: int = 10) -> Tuple[pd.DataFrame, List]:
     """
@@ -102,22 +119,15 @@ def calculate_votes(
     if not all_int_bool:
         raise TypeError("Non-integer columns passed")
 
-    votes = data.copy()
+    # Create mean and standard deviation metadata
     stats = pd.DataFrame()
-    # Create mean and standard deviation columns
     stats["individual_sd"] = likert_cols.std(axis=1, skipna=True)
     stats["individual_mean"] = likert_cols.mean(axis=1, skipna=True)
 
-    # Replace values in likert column based on the threshold condition
+    # Calculate votes data
+    votes = data.copy()
     for col in columns:
-        zscore = (votes[col] - stats["individual_mean"]) / stats["individual_sd"]
-
-        votes.loc[threshold < zscore, col] = 1  # Create upvotes
-        votes.loc[-1 * threshold > zscore, col] = -1  # Create downvotes
-        votes.loc[
-            (threshold >= zscore) & (zscore >= (-1 * threshold)), col
-        ] = 0  # Set all other values to zero
-        votes.loc[zscore.isna(), col] = 0  # Catch for zero standard deviation
+        votes[col] = data.apply(lambda row: calculate_score(row, col, columns, threshold), axis=1)
 
     return votes, stats
 
