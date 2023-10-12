@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import altair as alt
 
+
 def calculate_score(row, col, cols, threshold):
     """
     Calculate a score based on a z-score for a specific value in a DataFrame row.
@@ -34,6 +35,7 @@ def calculate_score(row, col, cols, threshold):
         return -1
     else:
         return 0
+
 
 def create_sample_data(ncols: int = 10, nrows: int = 10) -> Tuple[pd.DataFrame, List]:
     """
@@ -140,7 +142,9 @@ def calculate_votes(
     # Calculate votes data
     votes = data.copy()
     for col in columns:
-        votes[col] = data.apply(lambda row: calculate_score(row, col, columns, threshold), axis=1)
+        votes[col] = data.apply(
+            lambda row: calculate_score(row, col, columns, threshold), axis=1
+        )
 
     return votes, stats
 
