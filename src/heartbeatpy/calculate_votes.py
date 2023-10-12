@@ -18,7 +18,7 @@ def calculate_score(row, col, cols, threshold):
     Returns:
     int: A score based on the z-score and threshold. Returns 1 if z-score is above threshold,
          -1 if z-score is below -threshold, 0 otherwise. If row_std is 0, returns 0. If row[col] is NaN, returns NaN.
-    """
+    """  # noqa: E501
 
     row_mean = row[cols].mean(skipna=True)
     row_std = row[cols].std(skipna=True)
