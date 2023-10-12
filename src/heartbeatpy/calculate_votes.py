@@ -87,28 +87,26 @@ def calculate_votes(
             " above the mean to define an upvote."
         )
 
-    if data[columns].isna().any().any():
-        raise ValueError(
-            "NA values present in data. "
-            "Please remove or impute NA values before using calculate_votes()."
-        )
-
     if not isinstance(columns, list):
         # in case a pandas Index gets passed
         columns = list(columns)
     likert_cols = data[columns]
 
-    # Here we check if all the values passed are integers, since likert
+    # Check if all the values passed are integers, or NAN values since likert
     # data must be an integer range (e.g. 1-5)
-    all_int_columns = list(likert_cols.select_dtypes("int").columns)
-    if all_int_columns != columns:
+    def check_integer_or_nan(column):
+        return column.apply(lambda x: (x % 1 == 0) or pd.isna(x)).all()
+
+    all_int_bool = all([check_integer_or_nan(data[col]) for col in columns])
+
+    if not all_int_bool:
         raise TypeError("Non-integer columns passed")
 
     votes = data.copy()
     stats = pd.DataFrame()
     # Create mean and standard deviation columns
-    stats["individual_sd"] = likert_cols.std(axis=1)
-    stats["individual_mean"] = likert_cols.mean(axis=1)
+    stats["individual_sd"] = likert_cols.std(axis=1, skipna=True)
+    stats["individual_mean"] = likert_cols.mean(axis=1, skipna=True)
 
     # Replace values in likert column based on the threshold condition
     for col in columns:
