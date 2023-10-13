@@ -71,6 +71,9 @@ def test_missing_data(sample_data):
 
     votes, stats = calculate_votes(data, columns=[f"Q{i}" for i in range(1, 7)])
 
+    # Check NA value was not overwritten
+    assert np.isnan(votes.loc[4, "Q6"])
+
 
 def test_zero_stdev():
     data = pd.DataFrame(
