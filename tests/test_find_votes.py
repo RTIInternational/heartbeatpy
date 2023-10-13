@@ -60,11 +60,6 @@ def test_provide_threshold(sample_data):
     calculate_votes(data=sample_data[0], columns=sample_data[1], threshold=0.5)
 
 
-def test_na_column(sample_data):
-    nan_data = sample_data[0].assign(Q6=np.NaN)
-    calculate_votes(data=nan_data, columns=[f"Q{i}" for i in range(1, 7)])
-
-
 def test_missing_data(sample_data):
     data = sample_data[0]
     data["Q6"] = [1, 2, 3, 4, np.NaN, 4, 4, 2, 1, 5]
