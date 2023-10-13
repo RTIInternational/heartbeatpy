@@ -6,6 +6,7 @@ from heartbeatpy import (
 )
 import pandas as pd
 import pytest
+import numpy as np
 
 
 @pytest.fixture
@@ -57,6 +58,16 @@ def test_vote_calc():
 
 def test_provide_threshold(sample_data):
     calculate_votes(data=sample_data[0], columns=sample_data[1], threshold=0.5)
+
+
+def test_missing_data(sample_data):
+    data = sample_data[0]
+    data["Q6"] = [1, 2, 3, 4, np.NaN, 4, 4, 2, 1, 5]
+
+    votes, stats = calculate_votes(data, columns=[f"Q{i}" for i in range(1, 7)])
+
+    # Check NA value was not overwritten
+    assert np.isnan(votes.loc[4, "Q6"])
 
 
 def test_zero_stdev():

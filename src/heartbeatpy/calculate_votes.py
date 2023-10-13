@@ -5,6 +5,38 @@ import pandas as pd
 import altair as alt
 
 
+def calculate_score(row, col, cols, threshold):
+    """
+    Calculate a score based on a z-score for a specific value in a DataFrame row.
+
+    Args:
+    row (pd.Series): A pandas Series representing a row in a DataFrame.
+    col (str): The name of the column for which the z-score should be calculated.
+    cols (list of str): A list of column names used to calculate the mean and standard deviation.
+    threshold (float): The threshold value for classifying the z-score.
+
+    Returns:
+    int: A score based on the z-score and threshold. Returns 1 if z-score is above threshold,
+         -1 if z-score is below -threshold, 0 otherwise. If row_std is 0, returns 0. If row[col] is NaN, returns NaN.
+    """  # noqa: E501
+
+    row_mean = row[cols].mean(skipna=True)
+    row_std = row[cols].std(skipna=True)
+    if np.isnan(row[col]):
+        return np.NaN
+    elif row_std == 0:
+        return 0
+    else:
+        zscore = (row[col] - row_mean) / row_std
+
+    if threshold < zscore:
+        return 1
+    elif (-1 * threshold) > zscore:
+        return -1
+    else:
+        return 0
+
+
 def create_sample_data(ncols: int = 10, nrows: int = 10) -> Tuple[pd.DataFrame, List]:
     """
     Creates a sample survey DataFrame with random integer values.
@@ -92,29 +124,27 @@ def calculate_votes(
         columns = list(columns)
     likert_cols = data[columns]
 
-    # Here we check if all the values passed are integers, since likert
+    # Check if all the values passed are integers, or NAN values since likert
     # data must be an integer range (e.g. 1-5)
-    all_int_columns = list(likert_cols.select_dtypes("int").columns)
-    if all_int_columns != columns:
+    def check_integer_or_nan(column):
+        return column.apply(lambda x: (x % 1 == 0) or pd.isna(x)).all()
+
+    all_int_bool = all([check_integer_or_nan(data[col]) for col in columns])
+
+    if not all_int_bool:
         raise TypeError("Non-integer columns passed")
 
-    votes = data.copy()
+    # Create mean and standard deviation metadata
     stats = pd.DataFrame()
-    # Create mean and standard deviation columns
     stats["individual_sd"] = likert_cols.std(axis=1, skipna=True)
     stats["individual_mean"] = likert_cols.mean(axis=1, skipna=True)
 
-    # Replace values in likert column based on the threshold condition
+    # Calculate votes data
+    votes = data.copy()
     for col in columns:
-        with pd.option_context("use_inf_as_na", True):
-            zscore = (votes[col] - stats["individual_mean"]) / stats["individual_sd"]
-
-        votes.loc[threshold < zscore, col] = 1  # Create upvotes
-        votes.loc[-1 * threshold > zscore, col] = -1  # Create downvotes
-        votes.loc[
-            (threshold > zscore) & (zscore > (-1 * threshold)), col
-        ] = 0  # Set all other values to zero
-        votes.loc[zscore.isna(), col] = 0  # Catch for zero standard deviation
+        votes[col] = data.apply(
+            lambda row: calculate_score(row, col, columns, threshold), axis=1
+        )
 
     return votes, stats
 
@@ -140,7 +170,7 @@ def calculate_summary(votes: pd.DataFrame, columns: List[str]) -> pd.DataFrame:
 
     Args:
         votes (DataFrame): The dataset containing the votes, created by calculate_votes().
-        columns (list): A list of likert question column names in the dataset.
+        columns (list): A list of likert question column names in the votes dataset.
 
     Returns:
         DataFrame: A summary DataFrame with the following columns:
@@ -150,6 +180,13 @@ def calculate_summary(votes: pd.DataFrame, columns: List[str]) -> pd.DataFrame:
             - Neutral: The percentage of neutral votes for the question.
             - Controversy_Score: The calculated controversy score for the question.
     """  # noqa: E501
+
+    # Check dataframe only consists of upvotes/downvotes/zeros:
+    vote_values = [-1, 0, 1]
+
+    if not all([all(votes[col].isin(vote_values)) for col in columns]):
+        raise ValueError(f"Vote dataframe contains values other than {vote_values}")
+
     summary = (
         votes.melt(value_vars=columns, var_name="Question", value_name="vote")
         .groupby(["Question"])
